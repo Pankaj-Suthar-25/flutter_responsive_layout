@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: InteractiveStackLayout(
+      home: AnimatedGradientLayout(
         items: [
           'text 1',
           'text 2',
@@ -209,6 +209,57 @@ class _InteractiveStackLayoutState extends State<InteractiveStackLayout> {
                   (index) => _buildStackedCard(widget.items[index], index),
                 ),
               ),
+      ),
+    );
+  }
+}
+
+class AnimatedGradientLayout extends StatefulWidget {
+  const AnimatedGradientLayout({super.key, required this.items});
+
+  final List<String> items;
+
+  @override
+  State<AnimatedGradientLayout> createState() => _AnimatedGradientLayoutState();
+}
+
+class _AnimatedGradientLayoutState extends State<AnimatedGradientLayout> {
+  bool _isExpanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(seconds: 1),
+      decoration: BoxDecoration(
+        gradient: _isExpanded
+            ? LinearGradient(colors: [Colors.blue, Colors.purple])
+            : LinearGradient(colors: [Colors.red, Colors.orange]),
+      ),
+      child: Center(
+        child: GestureDetector(
+          onTap: () => setState(() => _isExpanded = !_isExpanded),
+          child: _isExpanded
+              ? ResponsiveCardLayout(items: widget.items)
+              : Stack(
+                  children: List.generate(widget.items.length, (index) {
+                  return Positioned(
+                    top: index * 10.0,
+                    left: index * 10.0,
+                    child: Card(
+                      elevation: 4,
+                      child: Container(
+                        width: 150,
+                        height: 100,
+                        alignment: Alignment.center,
+                        child: Text(
+                          widget.items[index],
+                          style: const TextStyle(fontSize: 24),
+                        ),
+                      ),
+                    ),
+                  );
+                })),
+        ),
       ),
     );
   }
